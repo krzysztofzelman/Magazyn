@@ -1,0 +1,45 @@
+﻿@page "/"
+@inject HttpClient Http
+
+<PageTitle>Magazyn</PageTitle>
+
+<h1>Magazyn</h1>
+
+@if (przedmioty == null)
+{
+    <p><em>Ładowanie...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nazwa</th>
+                <th>Ilość</th>
+                <th>Cena</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var przedmiot in przedmioty)
+            {
+                <tr>
+                    <td>@przedmiot.Id</td>
+                    <td>@przedmiot.Nazwa</td>
+                    <td>@przedmiot.Ilosc</td>
+                    <td>@przedmiot.Cena zł</td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Przedmiot>? przedmioty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
+    }
+}
