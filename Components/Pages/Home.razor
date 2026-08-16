@@ -25,7 +25,8 @@ else
                 <th>Nazwa</th>
                 <th>Ilość</th>
                 <th>Cena</th>
-            </tr>
+                <th>Akcje</th>
+            </tr>      
         </thead>
         <tbody>
             @foreach (var przedmiot in przedmioty)
@@ -35,6 +36,9 @@ else
                     <td>@przedmiot.Nazwa</td>
                     <td>@przedmiot.Ilosc</td>
                     <td>@przedmiot.Cena zł</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(() => Usun(przedmiot.Id))">Usuń</button>
+                    </td>
                 </tr>
             }
 
@@ -60,5 +64,10 @@ else
         var nowyPrzedmiot = new Przedmiot { Nazwa = nazwa, Ilosc = ilosc, Cena = cena };
         await Http.PostAsJsonAsync("http://localhost:5000/api/przedmioty", nowyPrzedmiot);
         przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
-    }   
+    } 
+    private async Task Usun(int id)
+    {
+        await Http.DeleteAsync($"http://localhost:5000/api/przedmioty/{id}");
+        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
+    }
 }     
