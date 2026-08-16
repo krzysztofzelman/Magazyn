@@ -1,9 +1,16 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 @inject HttpClient Http
 
 <PageTitle>Magazyn</PageTitle>
 
 <h1>Magazyn</h1>
+
+<input @bind="nazwa" placeholder="Nazwa" />
+<input @bind="ilosc" placeholder="Ilość" />
+<input @bind="cena" placeholder="Cena" />
+
+<button class="btn btn-primary" @onclick="Dodaj">Dodaj</button>
 
 @if (przedmioty == null)
 {
@@ -36,10 +43,22 @@ else
 }
 
 @code {
+    private string nazwa ="";
+    private int ilosc;
+    private decimal cena;
+
+    
+
     private List<Przedmiot>? przedmioty;
 
     protected override async Task OnInitializedAsync()
     {
         przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
     }
-}
+      private async Task Dodaj()
+      {
+        var nowyPrzedmiot = new Przedmiot { Nazwa = nazwa, Ilosc = ilosc, Cena = cena };
+        await Http.PostAsJsonAsync("http://localhost:5000/api/przedmioty", nowyPrzedmiot);
+        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
+    }   
+}     
