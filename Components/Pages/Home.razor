@@ -10,13 +10,19 @@
 <input @bind="ilosc" placeholder="Ilość" />
 <input @bind="cena" placeholder="Cena" />
 
-<button class="btn btn-primary" @onclick="Dodaj">Dodaj</button>
-
-@if (przedmioty == null)
+@if (edytowanyId == 0)
+{
+    <button class="btn btn-primary" @onclick="Dodaj">Dodaj</button>
+}
+else
+{
+    <button class="btn btn-success" @onclick="Dodaj">Zapisz</button>
+}   
+@if (przedmioty == null) // Wyświetlanie komunikatu ładowania, jeśli przedmioty są null
 {
     <p><em>Ładowanie...</em></p>
 }
-else
+else // Wyświetlanie tabeli z przedmiotami
 {
     <table class="table">
         <thead>
@@ -29,7 +35,7 @@ else
             </tr>      
         </thead>
         <tbody>
-            @foreach (var przedmiot in przedmioty)
+            @foreach (var przedmiot in przedmioty) // Wyświetlanie przedmiotów w tabeli
             {
                 <tr>
                     <td>@przedmiot.Id</td>
@@ -38,6 +44,7 @@ else
                     <td>@przedmiot.Cena zł</td>
                     <td>
                         <button class="btn btn-danger" @onclick="@(() => Usun(przedmiot.Id))">Usuń</button>
+                        <button class="btn btn-warning" @onclick="@(() => Edytuj(przedmiot.Id))">Edytuj</button>
                     </td>
                 </tr>
             }
@@ -46,28 +53,49 @@ else
     </table>
 }
 
-@code {
+@code { // Definicja klasy Przedmiot
     private string nazwa ="";
     private int ilosc;
     private decimal cena;
-
-    
-
+    private int edytowanyId = 0;
+   
     private List<Przedmiot>? przedmioty;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() // Pobieranie przedmiotów z AP
     {
         przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
     }
-      private async Task Dodaj()
-      {
-        var nowyPrzedmiot = new Przedmiot { Nazwa = nazwa, Ilosc = ilosc, Cena = cena };
-        await Http.PostAsJsonAsync("http://localhost:5000/api/przedmioty", nowyPrzedmiot);
+    private async Task Dodaj()
+    {
+        if (edytowanyId == 0)
+        {
+            var nowyPrzedmiot = new Przedmiot { Nazwa = nazwa, Ilosc = ilosc, Cena = cena };
+            await Http.PostAsJsonAsync("http://localhost:5000/api/przedmioty", nowyPrzedmiot);
+        }
+        else
+        {
+            var edytowany = new Przedmiot { Nazwa = nazwa, Ilosc = ilosc, Cena = cena };
+            await Http.PutAsJsonAsync($"http://localhost:5000/api/przedmioty/{edytowanyId}", edytowany);
+            edytowanyId = 0;
+        }
         przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
     } 
-    private async Task Usun(int id)
+    private async Task Usun(int id) // Usuwanie przedmiot
     {
         await Http.DeleteAsync($"http://localhost:5000/api/przedmioty/{id}");
         przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
     }
-}     
+    private void Edytuj(int id) // Edytowanie przedmiot
+    {
+        foreach (var przedmiot in przedmioty) // Szukanie przedmiotu o podanym id
+        {
+            if (przedmiot.Id == id)
+            {
+                nazwa = przedmiot.Nazwa;
+                ilosc = przedmiot.Ilosc;
+                cena = przedmiot.Cena;
+                edytowanyId = id;
+            }
+        }
+    }
+}
