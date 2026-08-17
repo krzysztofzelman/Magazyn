@@ -51,6 +51,8 @@ else // Wyświetlanie tabeli z przedmiotami
 
         </tbody>
     </table>
+    <p><strong>Wartość magazynu: @wartoscMagazynu zł</strong></p>
+    <p> <strong>Liczba sztuk: @iloscSztuk</strong></p>
 }
 
 @code { // Definicja klasy Przedmiot
@@ -60,11 +62,34 @@ else // Wyświetlanie tabeli z przedmiotami
     private int edytowanyId = 0;
    
     private List<Przedmiot>? przedmioty;
+    private decimal wartoscMagazynu;
+    private int iloscSztuk;
 
     protected override async Task OnInitializedAsync() // Pobieranie przedmiotów z AP
     {
         przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
+        ObliczWartosc();
+        ObliczIlosc();
     }
+
+    private void ObliczWartosc()
+    {
+        wartoscMagazynu = 0;
+        foreach (var przedmiot in przedmioty)
+        {
+            wartoscMagazynu = wartoscMagazynu + przedmiot.Ilosc * przedmiot.Cena;
+        }
+    }
+
+    private void ObliczIlosc()
+    {
+        iloscSztuk = 0;
+        foreach (var przedmiot in przedmioty)
+        {
+            iloscSztuk = iloscSztuk + przedmiot.Ilosc;
+        }
+    }
+
     private async Task Dodaj()
     {
         if (edytowanyId == 0)
@@ -79,11 +104,15 @@ else // Wyświetlanie tabeli z przedmiotami
             edytowanyId = 0;
         }
         przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
-    } 
+        ObliczWartosc();
+        ObliczIlosc();
+    }
     private async Task Usun(int id) // Usuwanie przedmiot
     {
         await Http.DeleteAsync($"http://localhost:5000/api/przedmioty/{id}");
         przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
+        ObliczWartosc();
+        ObliczIlosc();
     }
     private void Edytuj(int id) // Edytowanie przedmiot
     {
