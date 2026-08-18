@@ -92,10 +92,24 @@ else // Wyświetlanie tabeli z przedmiotami
 
     private async Task Dodaj()
     {
+        bool znaleziony = false;
+
         if (edytowanyId == 0)
         {
-            var nowyPrzedmiot = new Przedmiot { Nazwa = nazwa, Ilosc = ilosc, Cena = cena };
-            await Http.PostAsJsonAsync("http://localhost:5000/api/przedmioty", nowyPrzedmiot);
+            foreach (var przedmiot in przedmioty)
+            {
+                if (przedmiot.Nazwa == nazwa)
+                {
+                    var podbity = new Przedmiot { Nazwa = przedmiot.Nazwa, Ilosc = przedmiot.Ilosc + ilosc, Cena = przedmiot.Cena };
+                    await Http.PutAsJsonAsync($"http://localhost:5000/api/przedmioty/{przedmiot.Id}", podbity);
+                    znaleziony = true;
+                }
+            }
+            if (znaleziony == false)
+            {
+                var nowyPrzedmiot = new Przedmiot { Nazwa = nazwa, Ilosc = ilosc, Cena = cena };
+                await Http.PostAsJsonAsync("http://localhost:5000/api/przedmioty", nowyPrzedmiot);
+            }
         }
         else
         {
