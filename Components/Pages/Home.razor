@@ -9,6 +9,7 @@
 <input @bind="nazwa" placeholder="Nazwa" />
 <input @bind="ilosc" placeholder="Ilość" />
 <input @bind="cena" placeholder="Cena" />
+<input @bind="szukanaNazwa" @bind:event="oninput" placeholder="Szukana nazwa" />
 
 @if (edytowanyId == 0)
 {
@@ -31,32 +32,39 @@ else // Wyświetlanie tabeli z przedmiotami
                 <th>Nazwa</th>
                 <th>Ilość</th>
                 <th>Cena</th>
+                <th>Wartość</th>
                 <th>Akcje</th>
             </tr>      
         </thead>
         <tbody>
             @foreach (var przedmiot in przedmioty) // Wyświetlanie przedmiotów w tabeli
             {
-                <tr>
-                    <td>@przedmiot.Id</td>
-                    <td>@przedmiot.Nazwa</td>
-                    <td>@przedmiot.Ilosc</td>
-                    <td>@przedmiot.Cena zł</td>
-                    <td>
-                        <button class="btn btn-danger" @onclick="@(() => Usun(przedmiot.Id))">Usuń</button>
-                        <button class="btn btn-warning" @onclick="@(() => Edytuj(przedmiot.Id))">Edytuj</button>
-                    </td>
-                </tr>
+                @if (szukanaNazwa == "" || przedmiot.Nazwa.Contains(szukanaNazwa, StringComparison.OrdinalIgnoreCase))
+                {
+                    <tr>
+                        <td>@przedmiot.Id</td>
+                        <td>@przedmiot.Nazwa</td>
+                        <td>@przedmiot.Ilosc</td>
+                        <td>@przedmiot.Cena zł</td>
+                        <td>@(przedmiot.Ilosc * przedmiot.Cena) zł</td>
+                        <td>
+                            <button class="btn btn-danger" @onclick="@(() => Usun(przedmiot.Id))">Usuń</button>
+                            <button class="btn btn-warning" @onclick="@(() => Edytuj(przedmiot.Id))">Edytuj</button>
+                        </td>
+                    </tr>
+                }
             }
 
         </tbody>
     </table>
     <p><strong>Wartość magazynu: @wartoscMagazynu zł</strong></p>
     <p> <strong>Liczba sztuk: @iloscSztuk</strong></p>
+    <p> <strong>Liczba pozycji: @iloscpozycji</strong></p>
 }
 
 @code { // Definicja klasy Przedmiot
     private string nazwa ="";
+    private string szukanaNazwa = "";
     private int ilosc;
     private decimal cena;
     private int edytowanyId = 0;
@@ -64,12 +72,14 @@ else // Wyświetlanie tabeli z przedmiotami
     private List<Przedmiot>? przedmioty;
     private decimal wartoscMagazynu;
     private int iloscSztuk;
+    private int iloscpozycji;
 
     protected override async Task OnInitializedAsync() // Pobieranie przedmiotów z AP
     {
         przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
         ObliczWartosc();
         ObliczIlosc();
+        ObliczIloscPozycji();
     }
 
     private void ObliczWartosc()
@@ -87,6 +97,14 @@ else // Wyświetlanie tabeli z przedmiotami
         foreach (var przedmiot in przedmioty)
         {
             iloscSztuk = iloscSztuk + przedmiot.Ilosc;
+        }
+    }
+    private void ObliczIloscPozycji()
+    {
+        iloscpozycji = 0;
+        foreach (var przedmiot in przedmioty)
+        {
+            iloscpozycji++;
         }
     }
 
@@ -120,6 +138,7 @@ else // Wyświetlanie tabeli z przedmiotami
         przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
         ObliczWartosc();
         ObliczIlosc();
+        ObliczIloscPozycji();
     }
     private async Task Usun(int id) // Usuwanie przedmiot
     {
@@ -127,6 +146,7 @@ else // Wyświetlanie tabeli z przedmiotami
         przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
         ObliczWartosc();
         ObliczIlosc();
+        ObliczIloscPozycji();
     }
     private void Edytuj(int id) // Edytowanie przedmiot
     {
