@@ -26,7 +26,9 @@ else
 else // Wyświetlanie tabeli z przedmiotami
 {
     <table class="table">
+        @* Nagłówki tabeli *@
         <thead>
+            @* Wiersz z nagłówkami *@
             <tr>
                 <th>Id</th>
                 <th>Nazwa</th>
@@ -41,6 +43,7 @@ else // Wyświetlanie tabeli z przedmiotami
             {
                 @if (szukanaNazwa == "" || przedmiot.Nazwa.Contains(szukanaNazwa, StringComparison.OrdinalIgnoreCase))
                 {
+                    @* Wiersz z przedmiotem *@
                     <tr>
                         <td>@przedmiot.Id</td>
                         <td>@przedmiot.Nazwa</td>
