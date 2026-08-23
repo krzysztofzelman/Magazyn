@@ -1,0 +1,135 @@
+﻿@page "/partie"
+@rendermode InteractiveServer
+@inject HttpClient Http
+
+<PageTitle>Partie</PageTitle>
+
+<h1>Partie</h1>
+
+<input @bind="batchNumber" placeholder="Nr partii" />
+<input @bind="przedmiotId" placeholder="Id artykułu" />
+<input @bind="ilosc" placeholder="Ilość" />
+<input @bind="cena" placeholder="Cena" />
+<input @bind="data" placeholder="Data" />
+<input @bind="status" placeholder="Status" />
+
+@if (edytowanyId == 0)
+{
+    <button class="btn btn-primary" @onclick="Dodaj">Dodaj</button>
+}
+else
+{
+    <button class="btn btn-success" @onclick="Dodaj">Zapisz</button>
+}
+
+@if (partie == null)
+{
+    <p><em>Ładowanie...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nr partii</th>
+                <th>Artykuł</th>
+                <th>Ilość</th>
+                <th>Cena</th>
+                <th>Data</th>
+                <th>Status</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var partia in partie)
+            {
+                <tr>
+                    <td>@partia.Id</td>
+                    <td>@partia.BatchNumber</td>
+                    <td>@partia.Nazwa</td>
+                    <td>@partia.Ilosc</td>
+                    <td>@partia.Cena zł</td>
+                    <td>@partia.Data</td>
+                    <td>@partia.Status</td>
+                    <td>
+                        <button class="btn btn-danger" @onclick="@(() => Usun(partia.Id))">Usuń</button>
+                        <button class="btn btn-warning" @onclick="@(() => Edytuj(partia.Id))">Edytuj</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string batchNumber = "";
+    private int przedmiotId;
+    private int ilosc;
+    private decimal cena;
+    private string data = "";
+    private string status = "";
+    private int edytowanyId = 0;
+
+    private List<Batch>? partie;
+
+    protected override async Task OnInitializedAsync()
+    {
+        partie = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
+    }
+
+    private async Task Dodaj()
+    {
+        if (edytowanyId == 0)
+        {
+            var nowaPartia = new Batch
+            {
+                BatchNumber = batchNumber,
+                PrzedmiotId = przedmiotId,
+                Ilosc = ilosc,
+                Cena = cena,
+                Data = data,
+                Status = status
+            };
+            await Http.PostAsJsonAsync("http://localhost:5109/api/Batch", nowaPartia);
+        }
+        else
+        {
+            var edytowana = new Batch
+            {
+                BatchNumber = batchNumber,
+                PrzedmiotId = przedmiotId,
+                Ilosc = ilosc,
+                Cena = cena,
+                Data = data,
+                Status = status
+            };
+            await Http.PutAsJsonAsync($"http://localhost:5109/api/Batch/{edytowanyId}", edytowana);
+            edytowanyId = 0;
+        }
+        partie = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
+    }
+
+    private async Task Usun(int id)
+    {
+        await Http.DeleteAsync($"http://localhost:5109/api/Batch/{id}");
+        partie = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
+    }
+
+    private void Edytuj(int id)
+    {
+        foreach (var partia in partie)
+        {
+            if (partia.Id == id)
+            {
+                batchNumber = partia.BatchNumber;
+                przedmiotId = partia.PrzedmiotId;
+                ilosc = partia.Ilosc;
+                cena = partia.Cena;
+                data = partia.Data;
+                status = partia.Status;
+                edytowanyId = id;
+            }
+        }
+    }
+}

@@ -79,7 +79,7 @@ else // Wyświetlanie tabeli z przedmiotami
 
     protected override async Task OnInitializedAsync() // Pobieranie przedmiotów z AP
     {
-        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
+        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5109/api/przedmioty");
         ObliczWartosc();
         ObliczIlosc();
         ObliczIloscPozycji();
@@ -122,31 +122,31 @@ else // Wyświetlanie tabeli z przedmiotami
                 if (przedmiot.Nazwa == nazwa)
                 {
                     var podbity = new Przedmiot { Nazwa = przedmiot.Nazwa, Ilosc = przedmiot.Ilosc + ilosc, Cena = przedmiot.Cena };
-                    await Http.PutAsJsonAsync($"http://localhost:5000/api/przedmioty/{przedmiot.Id}", podbity);
+                    await Http.PutAsJsonAsync($"http://localhost:5109/api/przedmioty/{przedmiot.Id}", podbity);
                     znaleziony = true;
                 }
             }
             if (znaleziony == false)
             {
                 var nowyPrzedmiot = new Przedmiot { Nazwa = nazwa, Ilosc = ilosc, Cena = cena };
-                await Http.PostAsJsonAsync("http://localhost:5000/api/przedmioty", nowyPrzedmiot);
+                await Http.PostAsJsonAsync("http://localhost:5109/api/przedmioty", nowyPrzedmiot);
             }
         }
         else
         {
             var edytowany = new Przedmiot { Nazwa = nazwa, Ilosc = ilosc, Cena = cena };
-            await Http.PutAsJsonAsync($"http://localhost:5000/api/przedmioty/{edytowanyId}", edytowany);
+            await Http.PutAsJsonAsync($"http://localhost:5109/api/przedmioty/{edytowanyId}", edytowany);
             edytowanyId = 0;
         }
-        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
+        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5109/api/przedmioty");
         ObliczWartosc();
         ObliczIlosc();
         ObliczIloscPozycji();
     }
     private async Task Usun(int id) // Usuwanie przedmiot
     {
-        await Http.DeleteAsync($"http://localhost:5000/api/przedmioty/{id}");
-        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5000/api/przedmioty");
+        await Http.DeleteAsync($"http://localhost:5109/api/przedmioty/{id}");
+        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5109/api/przedmioty");
         ObliczWartosc();
         ObliczIlosc();
         ObliczIloscPozycji();
