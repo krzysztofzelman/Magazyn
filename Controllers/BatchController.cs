@@ -94,4 +94,73 @@ public class BatchController : ControllerBase
             command.ExecuteNonQuery();
         }
     }
+    [HttpPost("wydanie")]
+    public IActionResult Wydanie(DispatchRequest request)
+    {
+        string connectionString = _configuration.GetConnectionString("MagazynDb");
+
+        // 1. parking: przeczytaj partie artykułu (najstarsza pierwsza)
+        List<int> batchIds = new List<int>();
+        List<int> batchSizes = new List<int>();
+        using (SqliteConnection connection = new SqliteConnection(connectionString))
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = "SELECT Id, Ilosc FROM Partie WHERE PrzedmiotId = @itemId AND Ilosc > 0 ORDER BY Id ASC";
+            command.Parameters.AddWithValue("@itemId", request.ItemId);
+            SqliteDataReader reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                batchIds.Add(Convert.ToInt32(reader["Id"]));
+                batchSizes.Add(Convert.ToInt32(reader["Ilosc"]));
+            }
+        }
+
+        // 2. sprawdź, czy w ogóle jest dość towaru
+        int total = 0;
+        foreach (int size in batchSizes) total += size;
+        if (total < request.Quantity)
+            return BadRequest("Za mało towaru w magazynie");
+
+        // 3. wydaj z najstarszych partii (FIFO)
+        int remaining = request.Quantity;
+        using (SqliteConnection connection = new SqliteConnection(connectionString))
+        {
+            connection.Open();
+            for (int i = 0; i < batchIds.Count && remaining > 0; i++)
+            {
+                if (batchSizes[i] <= remaining)
+                {
+                    SqliteCommand command = connection.CreateCommand();
+                    command.CommandText = "UPDATE Partie SET Ilosc = 0, Status = 'Wydane' WHERE Id = @batchId";
+                    command.Parameters.AddWithValue("@batchId", batchIds[i]);
+                    command.ExecuteNonQuery();
+                    remaining -= batchSizes[i];
+                }
+                else
+                {
+
+                    SqliteCommand command = connection.CreateCommand();
+                    command.CommandText = "UPDATE Partie SET Ilosc = Ilosc - @take WHERE Id = @batchId";
+                    command.Parameters.AddWithValue("@take", remaining);
+                    command.Parameters.AddWithValue("@batchId", batchIds[i]);
+                    command.ExecuteNonQuery();
+                    remaining = 0;
+                }
+            }
+        }
+
+        // 4. zmniejsz stan artykułu
+        using (SqliteConnection connection = new SqliteConnection(connectionString))
+        {
+            connection.Open();
+            SqliteCommand command = connection.CreateCommand();
+            command.CommandText = "UPDATE Przedmioty SET Ilosc = Ilosc - @quantity WHERE Id = @itemId";
+            command.Parameters.AddWithValue("@quantity", request.Quantity);
+            command.Parameters.AddWithValue("@itemId", request.ItemId);
+            command.ExecuteNonQuery();
+        }
+
+        return Ok("Wydano towar");
+    }
 }
