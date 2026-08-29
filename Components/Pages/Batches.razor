@@ -7,13 +7,13 @@
 <h1>Partie</h1>
 
 <input @bind="batchNumber" placeholder="Nr partii" />
-<input @bind="przedmiotId" placeholder="Id artykułu" />
-<input @bind="ilosc" placeholder="Ilość" />
-<input @bind="cena" placeholder="Cena" />
-<input @bind="data" placeholder="Data" />
+<input @bind="itemId" placeholder="Id artykułu" />
+<input @bind="quantity" placeholder="Ilość" />
+<input @bind="price" placeholder="Cena" />
+<input @bind="date" placeholder="Data" />
 <input @bind="status" placeholder="Status" />
 
-@if (edytowanyId == 0)
+@if (editedId == 0)
 {
     <button class="btn btn-primary" @onclick="Dodaj">Dodaj</button>
 }
@@ -22,7 +22,7 @@ else
     <button class="btn btn-success" @onclick="Dodaj">Zapisz</button>
 }
 
-@if (partie == null)
+@if (batches == null)
 {
     <p><em>Ładowanie...</em></p>
 }
@@ -42,19 +42,19 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var partia in partie)
+            @foreach (var batch in batches)
             {
                 <tr>
-                    <td>@partia.Id</td>
-                    <td>@partia.BatchNumber</td>
-                    <td>@partia.Nazwa</td>
-                    <td>@partia.Ilosc</td>
-                    <td>@partia.Cena zł</td>
-                    <td>@partia.Data</td>
-                    <td>@partia.Status</td>
+                    <td>@batch.Id</td>
+                    <td>@batch.BatchNumber</td>
+                    <td>@batch.Name</td>
+                    <td>@batch.Quantity</td>
+                    <td>@batch.Price zł</td>
+                    <td>@batch.Date</td>
+                    <td>@batch.Status</td>
                     <td>
-                        <button class="btn btn-danger" @onclick="@(() => Usun(partia.Id))">Usuń</button>
-                        <button class="btn btn-warning" @onclick="@(() => Edytuj(partia.Id))">Edytuj</button>
+                        <button class="btn btn-danger" @onclick="@(() => Usun(batch.Id))">Usuń</button>
+                        <button class="btn btn-warning" @onclick="@(() => Edytuj(batch.Id))">Edytuj</button>
                     </td>
                 </tr>
             }
@@ -64,71 +64,71 @@ else
 
 @code {
     private string batchNumber = "";
-    private int przedmiotId;
-    private int ilosc;
-    private decimal cena;
-    private string data = "";
+    private int itemId;
+    private int quantity;
+    private decimal price;
+    private string date = "";
     private string status = "";
-    private int edytowanyId = 0;
+    private int editedId = 0;
 
-    private List<Batch>? partie;
+    private List<Batch>? batches;
 
     protected override async Task OnInitializedAsync()
     {
-        partie = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
+        batches = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
     }
 
     private async Task Dodaj()
     {
-        if (edytowanyId == 0)
+        if (editedId == 0)
         {
-            var nowaPartia = new Batch
+            var newBatch = new Batch
             {
                 BatchNumber = batchNumber,
-                PrzedmiotId = przedmiotId,
-                Ilosc = ilosc,
-                Cena = cena,
-                Data = data,
+                ItemId = itemId,
+                Quantity = quantity,
+                Price = price,
+                Date = date,
                 Status = status
             };
-            await Http.PostAsJsonAsync("http://localhost:5109/api/Batch", nowaPartia);
+            await Http.PostAsJsonAsync("http://localhost:5109/api/Batch", newBatch);
         }
         else
         {
-            var edytowana = new Batch
+            var editedBatch = new Batch
             {
                 BatchNumber = batchNumber,
-                PrzedmiotId = przedmiotId,
-                Ilosc = ilosc,
-                Cena = cena,
-                Data = data,
+                ItemId = itemId,
+                Quantity = quantity,
+                Price = price,
+                Date = date,
                 Status = status
             };
-            await Http.PutAsJsonAsync($"http://localhost:5109/api/Batch/{edytowanyId}", edytowana);
-            edytowanyId = 0;
+            await Http.PutAsJsonAsync($"http://localhost:5109/api/Batch/{editedId}", editedBatch);
+            editedId = 0;
         }
-        partie = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
+        batches = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
     }
 
     private async Task Usun(int id)
     {
         await Http.DeleteAsync($"http://localhost:5109/api/Batch/{id}");
-        partie = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
+        batches = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
     }
 
     private void Edytuj(int id)
     {
-        foreach (var partia in partie)
+        foreach (var batch in batches)
         {
-            if (partia.Id == id)
+            if (batch.Id == id)
             {
-                batchNumber = partia.BatchNumber;
-                przedmiotId = partia.PrzedmiotId;
-                ilosc = partia.Ilosc;
-                cena = partia.Cena;
-                data = partia.Data;
-                status = partia.Status;
-                edytowanyId = id;
+                batchNumber = batch.BatchNumber;
+                itemId = batch.ItemId;
+                quantity = batch.Quantity;
+                price = batch.Price;
+                date = batch.Date;
+                status = batch.Status;
+                editedId = id;
             }
         }
     }

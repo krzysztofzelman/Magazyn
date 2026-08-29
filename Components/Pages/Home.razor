@@ -6,20 +6,20 @@
 
 <h1>Magazyn</h1>
 
-<input @bind="nazwa" placeholder="Nazwa" />
-<input @bind="ilosc" placeholder="Ilość" />
-<input @bind="cena" placeholder="Cena" />
-<input @bind="szukanaNazwa" @bind:event="oninput" placeholder="Szukana nazwa" />
+<input @bind="name" placeholder="Nazwa" />
+<input @bind="quantity" placeholder="Ilość" />
+<input @bind="price" placeholder="Cena" />
+<input @bind="searchName" @bind:event="oninput" placeholder="Szukana nazwa" />
 
-@if (edytowanyId == 0)
+@if (editedId == 0)
 {
     <button class="btn btn-primary" @onclick="Dodaj">Dodaj</button>
 }
 else
 {
     <button class="btn btn-success" @onclick="Dodaj">Zapisz</button>
-}   
-@if (przedmioty == null) // Wyświetlanie komunikatu ładowania, jeśli przedmioty są null
+}
+@if (items == null) // Wyświetlanie komunikatu ładowania, jeśli przedmioty są null
 {
     <p><em>Ładowanie...</em></p>
 }
@@ -36,23 +36,23 @@ else // Wyświetlanie tabeli z przedmiotami
                 <th>Cena</th>
                 <th>Wartość</th>
                 <th>Akcje</th>
-            </tr>      
+            </tr>
         </thead>
         <tbody>
-            @foreach (var przedmiot in przedmioty) // Wyświetlanie przedmiotów w tabeli
+            @foreach (var item in items) // Wyświetlanie przedmiotów w tabeli
             {
-                @if (szukanaNazwa == "" || przedmiot.Nazwa.Contains(szukanaNazwa, StringComparison.OrdinalIgnoreCase))
+                @if (searchName == "" || item.Name.Contains(searchName, StringComparison.OrdinalIgnoreCase))
                 {
                     @* Wiersz z przedmiotem *@
                     <tr>
-                        <td>@przedmiot.Id</td>
-                        <td>@przedmiot.Nazwa</td>
-                        <td>@przedmiot.Ilosc</td>
-                        <td>@przedmiot.Cena zł</td>
-                        <td>@(przedmiot.Ilosc * przedmiot.Cena) zł</td>
+                        <td>@item.Id</td>
+                        <td>@item.Name</td>
+                        <td>@item.Quantity</td>
+                        <td>@item.Price zł</td>
+                        <td>@(item.Quantity * item.Price) zł</td>
                         <td>
-                            <button class="btn btn-danger" @onclick="@(() => Usun(przedmiot.Id))">Usuń</button>
-                            <button class="btn btn-warning" @onclick="@(() => Edytuj(przedmiot.Id))">Edytuj</button>
+                            <button class="btn btn-danger" @onclick="@(() => Usun(item.Id))">Usuń</button>
+                            <button class="btn btn-warning" @onclick="@(() => Edytuj(item.Id))">Edytuj</button>
                         </td>
                     </tr>
                 }
@@ -60,26 +60,26 @@ else // Wyświetlanie tabeli z przedmiotami
 
         </tbody>
     </table>
-    <p><strong>Wartość magazynu: @wartoscMagazynu zł</strong></p>
-    <p> <strong>Liczba sztuk: @iloscSztuk</strong></p>
-    <p> <strong>Liczba pozycji: @iloscpozycji</strong></p>
+    <p><strong>Wartość magazynu: @totalValue zł</strong></p>
+    <p> <strong>Liczba sztuk: @totalQuantity</strong></p>
+    <p> <strong>Liczba pozycji: @totalItems</strong></p>
 }
 
 @code { // Definicja klasy Przedmiot
-    private string nazwa ="";
-    private string szukanaNazwa = "";
-    private int ilosc;
-    private decimal cena;
-    private int edytowanyId = 0;
-   
-    private List<Przedmiot>? przedmioty;
-    private decimal wartoscMagazynu;
-    private int iloscSztuk;
-    private int iloscpozycji;
+    private string name = "";
+    private string searchName = "";
+    private int quantity;
+    private decimal price;
+    private int editedId = 0;
+
+    private List<Item>? items;
+    private decimal totalValue;
+    private int totalQuantity;
+    private int totalItems;
 
     protected override async Task OnInitializedAsync() // Pobieranie przedmiotów z AP
     {
-        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5109/api/przedmioty");
+        items = await Http.GetFromJsonAsync<List<Item>>("http://localhost:5109/api/przedmioty");
         ObliczWartosc();
         ObliczIlosc();
         ObliczIloscPozycji();
@@ -87,58 +87,58 @@ else // Wyświetlanie tabeli z przedmiotami
 
     private void ObliczWartosc()
     {
-        wartoscMagazynu = 0;
-        foreach (var przedmiot in przedmioty)
+        totalValue = 0;
+        foreach (var item in items)
         {
-            wartoscMagazynu = wartoscMagazynu + przedmiot.Ilosc * przedmiot.Cena;
+            totalValue = totalValue + item.Quantity * item.Price;
         }
     }
 
     private void ObliczIlosc()
     {
-        iloscSztuk = 0;
-        foreach (var przedmiot in przedmioty)
+        totalQuantity = 0;
+        foreach (var item in items)
         {
-            iloscSztuk = iloscSztuk + przedmiot.Ilosc;
+            totalQuantity = totalQuantity + item.Quantity;
         }
     }
     private void ObliczIloscPozycji()
     {
-        iloscpozycji = 0;
-        foreach (var przedmiot in przedmioty)
+        totalItems = 0;
+        foreach (var item in items)
         {
-            iloscpozycji++;
+            totalItems++;
         }
     }
 
     private async Task Dodaj()
     {
-        bool znaleziony = false;
+        bool found = false;
 
-        if (edytowanyId == 0)
+        if (editedId == 0)
         {
-            foreach (var przedmiot in przedmioty)
+            foreach (var item in items)
             {
-                if (przedmiot.Nazwa == nazwa)
+                if (item.Name == name)
                 {
-                    var podbity = new Przedmiot { Nazwa = przedmiot.Nazwa, Ilosc = przedmiot.Ilosc + ilosc, Cena = przedmiot.Cena };
-                    await Http.PutAsJsonAsync($"http://localhost:5109/api/przedmioty/{przedmiot.Id}", podbity);
-                    znaleziony = true;
+                    var bumped = new Item { Name = item.Name, Quantity = item.Quantity + quantity, Price = item.Price };
+                    await Http.PutAsJsonAsync($"http://localhost:5109/api/przedmioty/{item.Id}", bumped);
+                    found = true;
                 }
             }
-            if (znaleziony == false)
+            if (found == false)
             {
-                var nowyPrzedmiot = new Przedmiot { Nazwa = nazwa, Ilosc = ilosc, Cena = cena };
-                await Http.PostAsJsonAsync("http://localhost:5109/api/przedmioty", nowyPrzedmiot);
+                var newItem = new Item { Name = name, Quantity = quantity, Price = price };
+                await Http.PostAsJsonAsync("http://localhost:5109/api/przedmioty", newItem);
             }
         }
         else
         {
-            var edytowany = new Przedmiot { Nazwa = nazwa, Ilosc = ilosc, Cena = cena };
-            await Http.PutAsJsonAsync($"http://localhost:5109/api/przedmioty/{edytowanyId}", edytowany);
-            edytowanyId = 0;
+            var editedItem = new Item { Name = name, Quantity = quantity, Price = price };
+            await Http.PutAsJsonAsync($"http://localhost:5109/api/przedmioty/{editedId}", editedItem);
+            editedId = 0;
         }
-        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5109/api/przedmioty");
+        items = await Http.GetFromJsonAsync<List<Item>>("http://localhost:5109/api/przedmioty");
         ObliczWartosc();
         ObliczIlosc();
         ObliczIloscPozycji();
@@ -146,21 +146,21 @@ else // Wyświetlanie tabeli z przedmiotami
     private async Task Usun(int id) // Usuwanie przedmiot
     {
         await Http.DeleteAsync($"http://localhost:5109/api/przedmioty/{id}");
-        przedmioty = await Http.GetFromJsonAsync<List<Przedmiot>>("http://localhost:5109/api/przedmioty");
+        items = await Http.GetFromJsonAsync<List<Item>>("http://localhost:5109/api/przedmioty");
         ObliczWartosc();
         ObliczIlosc();
         ObliczIloscPozycji();
     }
     private void Edytuj(int id) // Edytowanie przedmiot
     {
-        foreach (var przedmiot in przedmioty) // Szukanie przedmiotu o podanym id
+        foreach (var item in items) // Szukanie przedmiotu o podanym id
         {
-            if (przedmiot.Id == id)
+            if (item.Id == id)
             {
-                nazwa = przedmiot.Nazwa;
-                ilosc = przedmiot.Ilosc;
-                cena = przedmiot.Cena;
-                edytowanyId = id;
+                name = item.Name;
+                quantity = item.Quantity;
+                price = item.Price;
+                editedId = id;
             }
         }
     }
