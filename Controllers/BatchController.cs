@@ -31,11 +31,11 @@ public class BatchController : ControllerBase
                 lista.Add(new Batch
                 {
                     Id = Convert.ToInt32(reader["Id"]),
-                    PrzedmiotId = Convert.ToInt32(reader["PrzedmiotId"]),
-                    Nazwa = Convert.ToString(reader["Nazwa"]) ?? "",
-                    Ilosc = Convert.ToInt32(reader["Ilosc"]),
-                    Cena = Convert.ToDecimal(reader["Cena"]),
-                    Data = Convert.ToString(reader["Data"]),
+                    ItemId = Convert.ToInt32(reader["PrzedmiotId"]),
+                    Name = Convert.ToString(reader["Nazwa"]) ?? "",
+                    Quantity = Convert.ToInt32(reader["Ilosc"]),
+                    Price = Convert.ToDecimal(reader["Cena"]),
+                    Date = Convert.ToString(reader["Data"]),
                     Status = Convert.ToString(reader["Status"]),
                     BatchNumber = Convert.ToString(reader["BatchNumber"]) ?? ""
                 });
@@ -53,10 +53,10 @@ public class BatchController : ControllerBase
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = "INSERT INTO Partie (PrzedmiotId, Ilosc, Cena, Data, Status, BatchNumber)" +
                 " VALUES (@PrzedmiotId, @Ilosc, @Cena, @Data, @Status, @BatchNumber)";
-            command.Parameters.AddWithValue("@PrzedmiotId", batch.PrzedmiotId);
-            command.Parameters.AddWithValue("@Ilosc", batch.Ilosc);
-            command.Parameters.AddWithValue("@Cena", batch.Cena);
-            command.Parameters.AddWithValue("@Data", batch.Data);
+            command.Parameters.AddWithValue("@PrzedmiotId", batch.ItemId);
+            command.Parameters.AddWithValue("@Ilosc", batch.Quantity);
+            command.Parameters.AddWithValue("@Cena", batch.Price);
+            command.Parameters.AddWithValue("@Data", batch.Date);
             command.Parameters.AddWithValue("@Status", batch.Status);
             command.Parameters.AddWithValue("@BatchNumber", batch.BatchNumber);
             command.ExecuteNonQuery();
@@ -72,10 +72,10 @@ public class BatchController : ControllerBase
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = "UPDATE Partie SET PrzedmiotId=@PrzedmiotId, Ilosc=@Ilosc, Cena=@Cena, Data=@Data, Status=@Status, BatchNumber=@BatchNumber WHERE Id=@Id";
             command.Parameters.AddWithValue("@Id", id);
-            command.Parameters.AddWithValue("@PrzedmiotId", batch.PrzedmiotId);
-            command.Parameters.AddWithValue("@Ilosc", batch.Ilosc);
-            command.Parameters.AddWithValue("@Cena", batch.Cena);
-            command.Parameters.AddWithValue("@Data", batch.Data);
+            command.Parameters.AddWithValue("@PrzedmiotId", batch.ItemId);
+            command.Parameters.AddWithValue("@Ilosc", batch.Quantity);
+            command.Parameters.AddWithValue("@Cena", batch.Price);
+            command.Parameters.AddWithValue("@Data", batch.Date);
             command.Parameters.AddWithValue("@Status", batch.Status);
             command.Parameters.AddWithValue("@BatchNumber", batch.BatchNumber);
             command.ExecuteNonQuery();

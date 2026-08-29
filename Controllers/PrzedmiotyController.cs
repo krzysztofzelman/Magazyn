@@ -13,9 +13,9 @@ public class PrzedmiotyController : ControllerBase
     }
 
     [HttpGet]
-    public List<Przedmiot> GetPrzedmioty() // GET: api/przedmioty
+    public List<Item> GetPrzedmioty() // GET: api/przedmioty
     {
-        List<Przedmiot> lista = new List<Przedmiot>();
+        List<Item> lista = new List<Item>();
         string connectionString = _config.GetConnectionString("MagazynDb");
 
         using (SqliteConnection connection = new SqliteConnection(connectionString))
@@ -26,19 +26,19 @@ public class PrzedmiotyController : ControllerBase
             SqliteDataReader reader = command.ExecuteReader();
             while (reader.Read())
             {
-                lista.Add(new Przedmiot
+                lista.Add(new Item
                 {
                     Id = Convert.ToInt32(reader["Id"]),
-                    Nazwa = Convert.ToString(reader["Nazwa"]) ?? "",
-                    Ilosc = Convert.ToInt32(reader["Ilosc"]),
-                    Cena = Convert.ToDecimal(reader["Cena"])
+                    Name = Convert.ToString(reader["Nazwa"]) ?? "",
+                    Quantity = Convert.ToInt32(reader["Ilosc"]),
+                    Price = Convert.ToDecimal(reader["Cena"])
                 });
             }
         }
         return lista;
     }
     [HttpPost]
-    public void DodajPrzedmiot(Przedmiot nowy) // POST: api/przedmioty
+    public void DodajPrzedmiot(Item nowy) // POST: api/przedmioty
     {
         string connectionString = _config.GetConnectionString("MagazynDb");
         using (SqliteConnection connection = new SqliteConnection(connectionString))
@@ -46,15 +46,15 @@ public class PrzedmiotyController : ControllerBase
             connection.Open();
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = "INSERT INTO Przedmioty (Nazwa, Ilosc, Cena) VALUES (@Nazwa, @Ilosc, @Cena)";
-            command.Parameters.AddWithValue("@Nazwa", nowy.Nazwa);
-            command.Parameters.AddWithValue("@Ilosc", nowy.Ilosc);
-            command.Parameters.AddWithValue("@Cena", nowy.Cena);
+            command.Parameters.AddWithValue("@Nazwa", nowy.Name);
+            command.Parameters.AddWithValue("@Ilosc", nowy.Quantity);
+            command.Parameters.AddWithValue("@Cena", nowy.Price);
             command.ExecuteNonQuery();
         }
     }
 
     [HttpPut("{id}")]
-    public void EdytujPrzedmiot(int id, Przedmiot nowy) // PUT: api/przedmioty/5
+    public void EdytujPrzedmiot(int id, Item nowy) // PUT: api/przedmioty/5
     {
         string connectionString = _config.GetConnectionString("MagazynDb");
 
@@ -64,9 +64,9 @@ public class PrzedmiotyController : ControllerBase
             SqliteCommand command = connection.CreateCommand();
             command.CommandText = "UPDATE Przedmioty SET Nazwa =@Nazwa, Ilosc = @Ilosc, Cena = @Cena WHERE Id = @Id";
             command.Parameters.AddWithValue("@Id", id);
-            command.Parameters.AddWithValue("@Nazwa", nowy.Nazwa);
-            command.Parameters.AddWithValue("@Ilosc", nowy.Ilosc);
-            command.Parameters.AddWithValue("@Cena", nowy.Cena);
+            command.Parameters.AddWithValue("@Nazwa", nowy.Name);
+            command.Parameters.AddWithValue("@Ilosc", nowy.Quantity);
+            command.Parameters.AddWithValue("@Cena", nowy.Price);
             command.ExecuteNonQuery();
         }
     }
@@ -85,4 +85,3 @@ public class PrzedmiotyController : ControllerBase
         }
     }
 }
-    
