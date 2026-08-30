@@ -6,21 +6,38 @@
 
 <h1>Partie</h1>
 
-<input @bind="batchNumber" placeholder="Nr partii" />
-<input @bind="itemId" placeholder="Id artykułu" />
-<input @bind="quantity" placeholder="Ilość" />
-<input @bind="price" placeholder="Cena" />
-<input @bind="date" placeholder="Data" />
-<input @bind="status" placeholder="Status" />
-
-@if (editedId == 0)
-{
-    <button class="btn btn-primary" @onclick="Dodaj">Dodaj</button>
-}
-else
-{
-    <button class="btn btn-success" @onclick="Dodaj">Zapisz</button>
-}
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-2">
+                <input @bind="batchNumber" placeholder="Nr partii" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <input @bind="itemId" placeholder="Id artykułu" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <input @bind="quantity" placeholder="Ilość" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <input @bind="price" placeholder="Cena" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <input @bind="date" placeholder="Data" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <input @bind="status" placeholder="Status" class="form-control" />
+            </div>
+        </div>
+        @if (editedId == 0)
+        {
+            <button class="btn btn-primary mt-2" @onclick="Dodaj">Dodaj</button>
+        }
+        else
+        {
+            <button class="btn btn-success mt-2" @onclick="Dodaj">Zapisz</button>
+        }
+    </div>
+</div>
 
 @if (batches == null)
 {
@@ -28,7 +45,9 @@ else
 }
 else
 {
-    <table class="table">
+    <div class="card">
+        <div class="card-body p-0">
+    <table class="table table-striped table-hover align-middle mb-0">
         <thead>
             <tr>
                 <th>Id</th>
@@ -53,13 +72,15 @@ else
                     <td>@batch.Date</td>
                     <td>@batch.Status</td>
                     <td>
-                        <button class="btn btn-danger" @onclick="@(() => Usun(batch.Id))">Usuń</button>
-                        <button class="btn btn-warning" @onclick="@(() => Edytuj(batch.Id))">Edytuj</button>
+                        <button class="btn btn-outline-danger btn-sm" @onclick="@(() => Usun(batch.Id))">Usuń</button>
+                        <button class="btn btn-outline-warning btn-sm" @onclick="@(() => Edytuj(batch.Id))">Edytuj</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+     </div>
+    </div>
 }
 
 @code {

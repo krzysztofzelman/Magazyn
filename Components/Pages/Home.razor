@@ -6,63 +6,84 @@
 
 <h1>Magazyn</h1>
 
-<input @bind="name" placeholder="Nazwa" />
-<input @bind="quantity" placeholder="Ilość" />
-<input @bind="price" placeholder="Cena" />
-<input @bind="searchName" @bind:event="oninput" placeholder="Szukana nazwa" />
-
-@if (editedId == 0)
-{
-    <button class="btn btn-primary" @onclick="Dodaj">Dodaj</button>
-}
-else
-{
-    <button class="btn btn-success" @onclick="Dodaj">Zapisz</button>
-}
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-3">
+                <input @bind="name" placeholder="Nazwa" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <input @bind="quantity" placeholder="Ilość" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <input @bind="price" placeholder="Cena" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <input @bind="searchName" @bind:event="oninput" placeholder="Szukana nazwa" class="form-control" />
+            </div>
+            <div class="col-md-2 d-flex align-items-center">
+                @if (editedId == 0)
+                {
+                    <button class="btn btn-primary w-100" @onclick="Dodaj">Dodaj</button>
+                }
+                else
+                {
+                    <button class="btn btn-success w-100" @onclick="Dodaj">Zapisz</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
 @if (items == null) // Wyświetlanie komunikatu ładowania, jeśli przedmioty są null
 {
     <p><em>Ładowanie...</em></p>
 }
 else // Wyświetlanie tabeli z przedmiotami
 {
-    <table class="table">
-        @* Nagłówki tabeli *@
-        <thead>
-            @* Wiersz z nagłówkami *@
-            <tr>
-                <th>Id</th>
-                <th>Nazwa</th>
-                <th>Ilość</th>
-                <th>Cena</th>
-                <th>Wartość</th>
-                <th>Akcje</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in items) // Wyświetlanie przedmiotów w tabeli
-            {
-                @if (searchName == "" || item.Name.Contains(searchName, StringComparison.OrdinalIgnoreCase))
-                {
-                    @* Wiersz z przedmiotem *@
+     <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover align-middle mb-0">
+                @* Nagłówki tabeli *@
+                <thead>
+                    @* Wiersz z nagłówkami *@
                     <tr>
-                        <td>@item.Id</td>
-                        <td>@item.Name</td>
-                        <td>@item.Quantity</td>
-                        <td>@item.Price zł</td>
-                        <td>@(item.Quantity * item.Price) zł</td>
-                        <td>
-                            <button class="btn btn-danger" @onclick="@(() => Usun(item.Id))">Usuń</button>
-                            <button class="btn btn-warning" @onclick="@(() => Edytuj(item.Id))">Edytuj</button>
-                        </td>
+                        <th>Id</th>
+                        <th>Nazwa</th>
+                        <th>Ilość</th>
+                        <th>Cena</th>
+                        <th>Wartość</th>
+                        <th>Akcje</th>
                     </tr>
-                }
-            }
+                </thead>
+                <tbody>
+                    @foreach (var item in items) // Wyświetlanie przedmiotów w tabeli
+                    {
+                        @if (searchName == "" || item.Name.Contains(searchName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            @* Wiersz z przedmiotem *@
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.Name</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.Price zł</td>
+                                <td>@(item.Quantity * item.Price) zł</td>
+                                <td>
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="@(() => Usun(item.Id))">Usuń</button>
+                                    <button class="btn btn-outline-warning btn-sm" @onclick="@(() => Edytuj(item.Id))">Edytuj</button>
+                                </td>
+                            </tr>
+                        }
+                    }
 
-        </tbody>
-    </table>
-    <p><strong>Wartość magazynu: @totalValue zł</strong></p>
-    <p> <strong>Liczba sztuk: @totalQuantity</strong></p>
-    <p> <strong>Liczba pozycji: @totalItems</strong></p>
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <strong>Wartość magazynu: @totalValue zł</strong> ·
+            <strong>Liczba sztuk: @totalQuantity</strong> ·
+            <strong>Liczba pozycji: @totalItems</strong>
+        </div>
+    </div>
 }
 
 @code { // Definicja klasy Przedmiot
