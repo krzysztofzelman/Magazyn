@@ -2,27 +2,27 @@
 @rendermode InteractiveServer
 @inject HttpClient Http
 
-<PageTitle>Partie</PageTitle>
+<PageTitle>@Lang.T("Batches")</PageTitle>
 
-<h1>Partie</h1>
+<h1>@Lang.T("Batches")</h1>
 
 <div class="card mb-4">
     <div class="card-body">
         <div class="row g-2">
             <div class="col-md-2">
-                <input @bind="batchNumber" placeholder="Nr partii" class="form-control" />
+                <input @bind="batchNumber" placeholder="@Lang.T("BatchNo")" class="form-control" />
             </div>
             <div class="col-md-2">
-                <input @bind="itemId" placeholder="Id artykułu" class="form-control" />
+                <input @bind="itemId" placeholder="@Lang.T("ItemId")" class="form-control" />
             </div>
             <div class="col-md-2">
-                <input @bind="quantity" placeholder="Ilość" class="form-control" />
+                <input @bind="quantity" placeholder="@Lang.T("Quantity")" class="form-control" />
             </div>
             <div class="col-md-2">
-                <input @bind="price" placeholder="Cena" class="form-control" />
+                <input @bind="price" placeholder="@Lang.T("Price")" class="form-control" />
             </div>
             <div class="col-md-2">
-                <input @bind="date" placeholder="Data" class="form-control" />
+                <input @bind="date" placeholder="@Lang.T("Date")" class="form-control" />
             </div>
             <div class="col-md-2">
                 <input @bind="status" placeholder="Status" class="form-control" />
@@ -30,18 +30,18 @@
         </div>
         @if (editedId == 0)
         {
-            <button class="btn btn-primary mt-2" @onclick="Dodaj">Dodaj</button>
+            <button class="btn btn-primary mt-2" @onclick="Dodaj">@Lang.T("Add")</button>
         }
         else
         {
-            <button class="btn btn-success mt-2" @onclick="Dodaj">Zapisz</button>
+            <button class="btn btn-success mt-2" @onclick="Dodaj">@Lang.T("Save")</button>
         }
     </div>
 </div>
 
 @if (batches == null)
 {
-    <p><em>Ładowanie...</em></p>
+    <p><em>@Lang.T("Loading")</em></p>
 }
 else
 {
@@ -51,13 +51,13 @@ else
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Nr partii</th>
-                <th>Artykuł</th>
-                <th>Ilość</th>
-                <th>Cena</th>
-                <th>Data</th>
+                <th>@Lang.T("BatchNo")</th>
+                <th>@Lang.T("Item")</th>
+                <th>@Lang.T("Quantity")</th>
+                <th>@Lang.T("Price")</th>
+                <th>@Lang.T("Date")</th>
                 <th>Status</th>
-                <th>Akcje</th>
+                <th>@Lang.T("Actions")</th>
             </tr>
         </thead>
         <tbody>
@@ -72,8 +72,8 @@ else
                     <td>@batch.Date</td>
                     <td>@batch.Status</td>
                     <td>
-                        <button class="btn btn-outline-danger btn-sm" @onclick="@(() => Usun(batch.Id))">Usuń</button>
-                        <button class="btn btn-outline-warning btn-sm" @onclick="@(() => Edytuj(batch.Id))">Edytuj</button>
+                        <button class="btn btn-outline-danger btn-sm" @onclick="@(() => Usun(batch.Id))">@Lang.T("Delete")</button>
+                        <button class="btn btn-outline-warning btn-sm" @onclick="@(() => Edytuj(batch.Id))">@Lang.T("Edit")</button>
                     </td>
                 </tr>
             }
@@ -101,6 +101,11 @@ else
 
     private async Task Dodaj()
     {
+        if (batchNumber == "" || itemId == 0)
+        {
+            return;
+        }
+
         if (editedId == 0)
         {
             var newBatch = new Batch

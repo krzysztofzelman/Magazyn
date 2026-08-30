@@ -2,33 +2,33 @@
 @rendermode InteractiveServer
 @inject HttpClient Http
 
-<PageTitle>Magazyn</PageTitle>
+<PageTitle>@Lang.T("Warehouse")</PageTitle>
 
-<h1>Magazyn</h1>
+<h1>@Lang.T("Warehouse")</h1>
 
 <div class="card mb-4">
     <div class="card-body">
         <div class="row g-2">
             <div class="col-md-3">
-                <input @bind="name" placeholder="Nazwa" class="form-control" />
+                <input @bind="name" placeholder="@Lang.T("Name")" class="form-control" />
             </div>
             <div class="col-md-2">
-                <input @bind="quantity" placeholder="Ilość" class="form-control" />
+                <input @bind="quantity" placeholder="@Lang.T("Quantity")" class="form-control" />
             </div>
             <div class="col-md-2">
-                <input @bind="price" placeholder="Cena" class="form-control" />
+                <input @bind="price" placeholder="@Lang.T("Price")" class="form-control" />
             </div>
             <div class="col-md-3">
-                <input @bind="searchName" @bind:event="oninput" placeholder="Szukana nazwa" class="form-control" />
+                <input @bind="searchName" @bind:event="oninput" placeholder="@Lang.T("Search")" class="form-control" />
             </div>
             <div class="col-md-2 d-flex align-items-center">
                 @if (editedId == 0)
                 {
-                    <button class="btn btn-primary w-100" @onclick="Dodaj">Dodaj</button>
+                    <button class="btn btn-primary w-100" @onclick="Dodaj">@Lang.T("Add")</button>
                 }
                 else
                 {
-                    <button class="btn btn-success w-100" @onclick="Dodaj">Zapisz</button>
+                    <button class="btn btn-success w-100" @onclick="Dodaj">@Lang.T("Save")</button>
                 }
             </div>
         </div>
@@ -36,7 +36,7 @@
 </div>
 @if (items == null) // Wyświetlanie komunikatu ładowania, jeśli przedmioty są null
 {
-    <p><em>Ładowanie...</em></p>
+    <p><em>@Lang.T("Loading")</em></p>
 }
 else // Wyświetlanie tabeli z przedmiotami
 {
@@ -48,11 +48,11 @@ else // Wyświetlanie tabeli z przedmiotami
                     @* Wiersz z nagłówkami *@
                     <tr>
                         <th>Id</th>
-                        <th>Nazwa</th>
-                        <th>Ilość</th>
-                        <th>Cena</th>
-                        <th>Wartość</th>
-                        <th>Akcje</th>
+                        <th>@Lang.T("Name")</th>
+                        <th>@Lang.T("Quantity")</th>
+                        <th>@Lang.T("Price")</th>
+                        <th>@Lang.T("Value")</th>
+                        <th>@Lang.T("Actions")</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,8 +68,8 @@ else // Wyświetlanie tabeli z przedmiotami
                                 <td>@item.Price zł</td>
                                 <td>@(item.Quantity * item.Price) zł</td>
                                 <td>
-                                    <button class="btn btn-outline-danger btn-sm" @onclick="@(() => Usun(item.Id))">Usuń</button>
-                                    <button class="btn btn-outline-warning btn-sm" @onclick="@(() => Edytuj(item.Id))">Edytuj</button>
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="@(() => Usun(item.Id))">@Lang.T("Delete")</button>
+                                    <button class="btn btn-outline-warning btn-sm" @onclick="@(() => Edytuj(item.Id))">@Lang.T("Edit")</button>
                                 </td>
                             </tr>
                         }
@@ -79,14 +79,15 @@ else // Wyświetlanie tabeli z przedmiotami
             </table>
         </div>
         <div class="card-footer">
-            <strong>Wartość magazynu: @totalValue zł</strong> ·
-            <strong>Liczba sztuk: @totalQuantity</strong> ·
-            <strong>Liczba pozycji: @totalItems</strong>
+            <strong>@Lang.T("TotalValue"): @totalValue zł</strong> ·
+            <strong>@Lang.T("TotalQuantity"): @totalQuantity</strong> ·
+            <strong>@Lang.T("TotalItems"): @totalItems</strong>
         </div>
     </div>
 }
 
-@code { // Definicja klasy Przedmiot
+@code {
+    // Definicja klasy Przedmiot
     private string name = "";
     private string searchName = "";
     private int quantity;
@@ -135,6 +136,11 @@ else // Wyświetlanie tabeli z przedmiotami
     private async Task Dodaj()
     {
         bool found = false;
+
+        if (name == "")
+        {
+            return;
+        }
 
         if (editedId == 0)
         {
