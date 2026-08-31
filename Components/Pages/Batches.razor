@@ -6,6 +6,11 @@
 
 <h1>@Lang.T("Batches")</h1>
 
+@if (dispatchError != "")
+{
+    <div class="alert alert-danger">@dispatchError</div>
+}
+
 <div class="card mb-4">
     <div class="card-body">
         <div class="row g-2">
@@ -57,7 +62,7 @@ else
                 <th>@Lang.T("Price")</th>
                 <th>@Lang.T("Date")</th>
                 <th>Status</th>
-                <th>@Lang.T("Actions")</th>
+                <th>@Lang.T("Actions")</th>        
             </tr>
         </thead>
         <tbody>
@@ -72,6 +77,11 @@ else
                     <td>@batch.Date</td>
                     <td>@batch.Status</td>
                     <td>
+                        @if (batch.Quantity > 0)
+                        {
+                            <input type="number" @bind="dispatchQuantity[batch.Id]" style="width:70px" />
+                            <button class="btn btn-success btn-sm" @onclick="@(() => Dispatch(batch))">@Lang.T("Dispatch")</button>
+                        }
                         <button class="btn btn-outline-danger btn-sm" @onclick="@(() => Usun(batch.Id))">@Lang.T("Delete")</button>
                         <button class="btn btn-outline-warning btn-sm" @onclick="@(() => Edytuj(batch.Id))">@Lang.T("Edit")</button>
                     </td>
@@ -90,13 +100,15 @@ else
     private decimal price;
     private string date = "";
     private string status = "";
+    private string dispatchError = "";
     private int editedId = 0;
 
     private List<Batch>? batches;
+    private Dictionary<int, int> dispatchQuantity = new Dictionary<int, int>();
 
     protected override async Task OnInitializedAsync()
     {
-        batches = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
+        await Refresh();
     }
 
     private async Task Dodaj()
@@ -133,13 +145,13 @@ else
             await Http.PutAsJsonAsync($"http://localhost:5109/api/Batch/{editedId}", editedBatch);
             editedId = 0;
         }
-        batches = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
+        await Refresh();
     }
 
     private async Task Usun(int id)
     {
         await Http.DeleteAsync($"http://localhost:5109/api/Batch/{id}");
-        batches = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
+        await Refresh();
     }
 
     private void Edytuj(int id)
@@ -157,5 +169,22 @@ else
                 editedId = id;
             }
         }
+    }
+    private async Task Refresh()
+    {
+        batches = await Http.GetFromJsonAsync<List<Batch>>("http://localhost:5109/api/Batch");
+        dispatchQuantity = new Dictionary<int, int>();
+        foreach (var batch in batches)
+        {
+            dispatchQuantity[batch.Id] = 0;
+        }
+    }
+
+    private async Task Dispatch(Batch batch)
+    {
+        var response = await Http.PostAsJsonAsync("http://localhost:5109/api/Batch/wydanie",
+            new { itemId = batch.ItemId, quantity = dispatchQuantity[batch.Id] });
+        dispatchError = response.IsSuccessStatusCode ? "" : "Not enough stock!";
+        await Refresh();
     }
 }
