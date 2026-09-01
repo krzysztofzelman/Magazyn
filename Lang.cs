@@ -27,7 +27,16 @@ public static class Lang
         { "BatchNo", "Nr partii" },
         { "ItemId", "Id artykułu" },
         { "Item", "Artykuł" },
-        { "Date", "Data" }
+        { "Date", "Data" },
+        {"ServerError", "Błąd serwera" },
+        {"NotFound", "Nie znaleziono" },
+        {"Unauthorized", "Nieautoryzowany" },
+        {"Forbidden", "Zabroniony" },
+        {"BadRequest", "Nieprawidłowe żądanie" },
+        {"Conflict", "Konflikt" },
+        {"InternalServerError", "Błąd wewnętrzny serwera" },
+        {"NotEnoughStock", "Za mało towaru" },
+        {"EnterQuantity", "Podaj ilość" }
     };
 
     private static Dictionary<string, string> en = new Dictionary<string, string>
@@ -53,7 +62,16 @@ public static class Lang
         { "BatchNo", "Batch no." },
         { "ItemId", "Item id" },
         { "Item", "Item" },
-        { "Date", "Date" }
+        { "Date", "Date" },
+        {"ServerError", "Server Error" },
+        {"NotFound", "Not Found" },
+        {"Unauthorized", "Unauthorized" },
+        {"Forbidden", "Forbidden" },
+        {"BadRequest", "Bad Request" },
+        {"Conflict", "Conflict" },
+        {"InternalServerError", "Internal Server Error"  },
+        {"NotEnoughStock", "Not enough stock!" },
+        {"EnterQuantity", "Enter quantity" },
     };
 
     public static string T(string key)

@@ -193,9 +193,25 @@ else
 
     private async Task Dispatch(Batch batch)
     {
+        if (dispatchQuantity[batch.Id] <= 0)
+        {
+            dispatchError = @Lang.T("EnterQuantity");
+            return;
+        }
         var response = await Http.PostAsJsonAsync("http://localhost:5109/api/Batch/wydanie",
             new { itemId = batch.ItemId, quantity = dispatchQuantity[batch.Id] });
-        dispatchError = response.IsSuccessStatusCode ? "" : "Not enough stock!";
+        if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+        {
+            dispatchError = @Lang.T("NotEnoughStock");
+        }
+        else if (!response.IsSuccessStatusCode)
+        {
+            dispatchError = @Lang.T("ServerError");
+        }
+        else
+        {
+            dispatchError = "";
+        }
         await Refresh();
     }
 }
