@@ -35,12 +35,12 @@
         </div>
         @if (editedId == 0)
         {
-            <button class="btn btn-primary mt-2" @onclick="Dodaj">@Lang.T("Add")</button>
+            <button class="btn btn-primary mt-2" @onclick="Add">@Lang.T("Add")</button>
         }
         else
         {
-            <button class="btn btn-success mt-2" @onclick="Dodaj">@Lang.T("Save")</button>
-            <button class="btn btn-secondary mt-2" @onclick="Anuluj">@Lang.T("Cancel")</button>
+            <button class="btn btn-success mt-2" @onclick="Add">@Lang.T("Save")</button>
+            <button class="btn btn-secondary mt-2" @onclick="Cancel">@Lang.T("Cancel")</button>
         }
     </div>
 </div>
@@ -83,8 +83,8 @@ else
                             <input type="number" @bind="dispatchQuantity[batch.Id]" style="width:70px" />
                             <button class="btn btn-success btn-sm" @onclick="@(() => Dispatch(batch))">@Lang.T("Dispatch")</button>
                         }
-                        <button class="btn btn-outline-danger btn-sm" @onclick="@(() => Usun(batch.Id))">@Lang.T("Delete")</button>
-                        <button class="btn btn-outline-warning btn-sm" @onclick="@(() => Edytuj(batch.Id))">@Lang.T("Edit")</button>
+                        <button class="btn btn-outline-danger btn-sm" @onclick="@(() => Delete(batch.Id))">@Lang.T("Delete")</button>
+                        <button class="btn btn-outline-warning btn-sm" @onclick="@(() => Edit(batch.Id))">@Lang.T("Edit")</button>
                     </td>
                 </tr>
             }
@@ -112,7 +112,7 @@ else
         await Refresh();
     }
 
-    private async Task Dodaj()
+    private async Task Add()
     {
         if (batchNumber == "" || itemId == 0)
         {
@@ -149,13 +149,13 @@ else
         await Refresh();
     }
 
-    private async Task Usun(int id)
+    private async Task Delete(int id)
     {
         await Http.DeleteAsync($"http://localhost:5109/api/Batch/{id}");
         await Refresh();
     }
 
-    private void Edytuj(int id)
+    private void Edit(int id)
     {
         foreach (var batch in batches)
         {
@@ -171,7 +171,7 @@ else
             }
         }
     }
-    private void Anuluj ()
+    private void Cancel ()
     {
         batchNumber = "";
         itemId = 0;
