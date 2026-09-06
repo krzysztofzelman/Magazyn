@@ -36,7 +36,8 @@ public static class Lang
         {"Conflict", "Konflikt" },
         {"InternalServerError", "Błąd wewnętrzny serwera" },
         {"NotEnoughStock", "Za mało towaru" },
-        {"EnterQuantity", "Podaj ilość" }
+        {"EnterQuantity", "Podaj ilość" },
+        { "Status", "Status" },
     };
 
     private static Dictionary<string, string> en = new Dictionary<string, string>
@@ -72,6 +73,7 @@ public static class Lang
         {"InternalServerError", "Internal Server Error"  },
         {"NotEnoughStock", "Not enough stock!" },
         {"EnterQuantity", "Enter quantity" },
+        { "Status", "Status" },
     };
 
     public static string T(string key)
