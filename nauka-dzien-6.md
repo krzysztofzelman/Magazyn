@@ -1019,5 +1019,34 @@ Sesja wg rytmu, ZERO zmian w kodzie. Git Web czysty @ `c07c4f8` przez cały dzie
 - ✅ Feedback zapisany: profesjonalne nazwy kolekcji (nie „pudełka")
 - ⏭️ **Następna sesja:** dokończyć spacer — Edit (karteczka l.170), Cancel (l.182), Refresh (l.186), Dispatch (l.201, znana z tabelki kto-pyta-API); potem KONIEC spaceru → przeróbki z kolejki (status→Lang.T kandydat, `??`, DI HttpClient, blokada Dispatch, `min="1"`)
 
+---
+
+# DZIEŃ 29 (2026-09-06, niedziela) — spacer Piętro 6 cz. 2: Edit rozumiane; przeróbka „Status→Lang.T" DONE ✅
+
+Sesja wg rytmu. Start: user wybrała opcję „Dokończyć spacer (Piętro 6)". Git Web czysty @ `c07c4f8`.
+
+## Spacer: Edit (l.166) — przeczytane, potem KRYZYS CZYTANIA → zmiana trybu
+- **Edit przeczytana przez usera ze zrozumieniem ✅** — parafraza: „wyjmuje pola z danymi i wlewa do zmiennych formularza" (poprawna!). Poprawka asystenta: **Edit NIE woła Http — nie idzie do bazy**; bierze dane z listy `batches` (w schowku, napełnionej przez Refresh). Wniosek-1-zdanie: metody z `Http.` = wycieczka na serwer; metody bez = praca na tym, co już jest w schowku
+- Pętla Edit rozłożona: `foreach` = chodź po liście → `if (batch.Id == id)` = czy to TA partia? → przepisz pola → `editedId = id` na końcu
+- **`editedId` wyjaśnione czystą mechaniką (oś czasu):** to JEDYNE miejsce pamięci „którą partię poprawiam". Gdyby Edit nie zapisał `editedId = id`, formularz myślałby dalej „dodaję nową" → klik Add = POST = **duplikat** zamiast aktualizacji. `editedId = 0` (strona otwarta) vs `editedId = 7` (poprawiam 7) → HTML przełącza Add→Save+Cancel
+- **Bonus:** oba przyciski Add i Save wołają TĘ SAMĄ metodę `Add()` — nazwa na przycisku to tylko TEKST; decyzję podejmuje `if (editedId == 0)` w środku metody (POST = dodaj nową / PUT = zapisz zmiany)
+- **KRYZYS CZYTANIA:** po pytaniu o `editedId` → „nie" → **„ja nie dam rady. mogę trochę poczytać ale jak tak czytam cały czas w większości nie rozumiem to takie cisnienie na siłe"** → DIAGNOZA: spacer = czyste czytanie, a czytanie ciągiem = najsłabszy tryb usera (pisanie działa); asystent przyznał, że samo-czytanie było błędem dnia → oferta A przerwa+notatki / B **zmieniamy na pisanie** / C tylko Cancel → user wybrała **B**
+
+## Przeróbka: „Status" → słownik Lang (ostatni tekst na sztywno w /partie) DONE ✅
+- Rekonesans: grep po .razor — ZERO polskich tekstów na sztywno; zostało tylko „Status" (placeholder l.33 + `<th>` l.65); wartości w bazie = „Przyjete"/„Wydane" (dane, nie ruszamy); Lang.cs nie miał wpisu „Status"
+- 3 zmiany wpisane przez usera (wzorzec Lang.T znany — skopiowany od sąsiadów):
+  1. `<th>Status</th>` → `<th>@Lang.T("Status")</th>` ✅
+  2. `placeholder="Status"` → `placeholder="@Lang.T("Status")"` (1 wpadka: brakujący cudzysłów po `)` — znaleziony przez read_file, user poprawił) ✅
+  3. Lang.cs: wpis `{ "Status", "Status" },` w słowniku `pl` (l.40) i `en` (l.76) ✅
+- Ciekawostka: „Status" brzmi tak samo po polsku i angielsku — wartość przeróbki = SPÓJNOŚĆ (zero tekstów poza słownikiem), nie widoczna zmiana
+- **BŁĄD DNIA — przecinek:** build padł „Błąd składni, oczekiwano elementu ','" + lawina błędów null (efekt domina). Przyczyna: user dopisała wpis ZA ostatnim `{"EnterQuantity", "Podaj ilość" }`, który nie miał przecinka (był ostatni) → fix: `},` na końcu linii. User: „serio? jeden przecinek to wywalił?" → lekcja: **przecinek = separator wpisów w słowniku; każdy wpis poza ostatnim MUSI go mieć (umowa składni, jak kropka na końcu zdania)**; to normalne, każdy programista to przerabiał. Build po fixie: ✅ DZIAŁA
+
+## Status (koniec dnia 29)
+- ✅ Spacer Piętro 6: Edit (najcięższa z reszty) rozumiana; Cancel/Refresh/Dispatch CZEKAJĄ (lekkie)
+- ✅ Przeróbka Status→Lang.T DONE — /partie w 100% przez słownik
+- ✅ Feedback: czytanie-ciągiem = „cisnienie na siłe" (wzmocnienie: przeróbka > spacer; rytm działa)
+- Zmiany w Web: `Batches.razor` + `Lang.cs` (commit)
+- ⏭️ **Następna sesja:** spacer — Cancel (l.182, banał), Refresh (l.186), Dispatch (l.201) → KONIEC spaceru; kolejka przeróbek: `??`, DI HttpClient, blokada Dispatch, `min="1"`
+
 
 
