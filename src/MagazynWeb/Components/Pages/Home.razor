@@ -1,0 +1,194 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject HttpClient Http
+
+<PageTitle>@Lang.T("Warehouse")</PageTitle>
+
+<h1>@Lang.T("Warehouse")</h1>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-2">
+            <div class="col-md-3">
+                <input @bind="name" placeholder="@Lang.T("Name")" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <input @bind="quantity" placeholder="@Lang.T("Quantity")" class="form-control" />
+            </div>
+            <div class="col-md-2">
+                <input @bind="price" placeholder="@Lang.T("Price")" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <input @bind="searchName" @bind:event="oninput" placeholder="@Lang.T("Search")" class="form-control" />
+            </div>
+            <div class="col-md-2 d-flex align-items-center">
+                @if (editedId == 0)
+                {
+                    <button class="btn btn-primary w-100" @onclick="Dodaj">@Lang.T("Add")</button>
+                }
+                else
+                {
+                    <button class="btn btn-success w-100" @onclick="Dodaj">@Lang.T("Save")</button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@if (items == null) // Wyświetlanie komunikatu ładowania, jeśli przedmioty są null
+{
+    <p><em>@Lang.T("Loading")</em></p>
+}
+else // Wyświetlanie tabeli z przedmiotami
+{
+     <div class="card">
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover align-middle mb-0">
+                @* Nagłówki tabeli *@
+                <thead>
+                    @* Wiersz z nagłówkami *@
+                    <tr>
+                        <th>Id</th>
+                        <th>@Lang.T("Name")</th>
+                        <th>@Lang.T("Quantity")</th>
+                        <th>@Lang.T("Price")</th>
+                        <th>@Lang.T("Value")</th>
+                        <th>@Lang.T("Actions")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in items) // Wyświetlanie przedmiotów w tabeli
+                    {
+                        @if (searchName == "" || item.Name.Contains(searchName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            @* Wiersz z przedmiotem *@
+                            <tr>
+                                <td>@item.Id</td>
+                                <td>@item.Name</td>
+                                <td>@item.Quantity</td>
+                                <td>@item.Price zł</td>
+                                <td>@(item.Quantity * item.Price) zł</td>
+                                <td>
+                                    <button class="btn btn-outline-danger btn-sm" @onclick="@(() => Usun(item.Id))">@Lang.T("Delete")</button>
+                                    <button class="btn btn-outline-warning btn-sm" @onclick="@(() => Edytuj(item.Id))">@Lang.T("Edit")</button>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer">
+            <strong>@Lang.T("TotalValue"): @totalValue zł</strong> ·
+            <strong>@Lang.T("TotalQuantity"): @totalQuantity</strong> ·
+            <strong>@Lang.T("TotalItems"): @totalItems</strong>
+        </div>
+    </div>
+}
+
+@code {
+    // Definicja klasy Przedmiot
+    private string name = "";
+    private string searchName = "";
+    private int quantity;
+    private decimal price;
+    private int editedId = 0;
+
+    private List<Item>? items;
+    private decimal totalValue;
+    private int totalQuantity;
+    private int totalItems;
+
+    protected override async Task OnInitializedAsync() // Pobieranie przedmiotów z AP
+    {
+        items = await Http.GetFromJsonAsync<List<Item>>("http://localhost:5109/api/przedmioty");
+        ObliczWartosc();
+        ObliczIlosc();
+        ObliczIloscPozycji();
+    }
+
+    private void ObliczWartosc()
+    {
+        totalValue = 0;
+        foreach (var item in items)
+        {
+            totalValue = totalValue + item.Quantity * item.Price;
+        }
+    }
+
+    private void ObliczIlosc()
+    {
+        totalQuantity = 0;
+        foreach (var item in items)
+        {
+            totalQuantity = totalQuantity + item.Quantity;
+        }
+    }
+    private void ObliczIloscPozycji()
+    {
+        totalItems = 0;
+        foreach (var item in items)
+        {
+            totalItems++;
+        }
+    }
+
+    private async Task Dodaj()
+    {
+        bool found = false;
+
+        if (name == "")
+        {
+            return;
+        }
+
+        if (editedId == 0)
+        {
+            foreach (var item in items)
+            {
+                if (item.Name == name)
+                {
+                    var bumped = new Item { Name = item.Name, Quantity = item.Quantity + quantity, Price = item.Price };
+                    await Http.PutAsJsonAsync($"http://localhost:5109/api/przedmioty/{item.Id}", bumped);
+                    found = true;
+                }
+            }
+            if (found == false)
+            {
+                var newItem = new Item { Name = name, Quantity = quantity, Price = price };
+                await Http.PostAsJsonAsync("http://localhost:5109/api/przedmioty", newItem);
+            }
+        }
+        else
+        {
+            var editedItem = new Item { Name = name, Quantity = quantity, Price = price };
+            await Http.PutAsJsonAsync($"http://localhost:5109/api/przedmioty/{editedId}", editedItem);
+            editedId = 0;
+        }
+        items = await Http.GetFromJsonAsync<List<Item>>("http://localhost:5109/api/przedmioty");
+        ObliczWartosc();
+        ObliczIlosc();
+        ObliczIloscPozycji();
+    }
+    private async Task Usun(int id) // Usuwanie przedmiot
+    {
+        await Http.DeleteAsync($"http://localhost:5109/api/przedmioty/{id}");
+        items = await Http.GetFromJsonAsync<List<Item>>("http://localhost:5109/api/przedmioty");
+        ObliczWartosc();
+        ObliczIlosc();
+        ObliczIloscPozycji();
+    }
+    private void Edytuj(int id) // Edytowanie przedmiot
+    {
+        foreach (var item in items) // Szukanie przedmiotu o podanym id
+        {
+            if (item.Id == id)
+            {
+                name = item.Name;
+                quantity = item.Quantity;
+                price = item.Price;
+                editedId = id;
+            }
+        }
+    }
+}

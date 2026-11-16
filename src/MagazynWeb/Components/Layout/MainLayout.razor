@@ -1,0 +1,18 @@
+@inherits LayoutComponentBase
+
+<nav class="navbar navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+        <span class="navbar-brand">Warehouse</span>
+        <div class="navbar-nav d-flex flex-row gap-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">Home</NavLink>
+            <NavLink class="nav-link" href="partie">@Lang.T("Batches")</NavLink>
+            <LangSwitch />
+        </div>
+    </div>
+</nav>
+
+<main>
+    <article class="content px-4">
+        @Body
+    </article>
+</main>
