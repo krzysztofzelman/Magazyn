@@ -2,6 +2,36 @@
 
 > Ściąga do notatek `mapa-projektu.md`. Tu patrzysz, GDZIE co jest; tam — JAK to działa (piosenki).
 
+## ⚠️ AKTUALNY UKŁAD (od 2026-11-16 — jeden folder, jedno repo)
+
+Cały projekt leży w `D:\Dane\Projekty\NaukaCSharp\Magazyn\` i jest **jednym repo git**:
+https://github.com/krzysztofzelman/Magazyn
+
+Wcześniej były CZTERY osobne foldery/repo (`Magazyn`, `MagazynApi`, `MagazynWeb`, `MagazynShared`)
+plus folder `MagazynBaza` z bazą. Ten układ jest **nieaktualny** — historia dni 1–29 niżej
+zostaje tylko jako zapis, jak wtedy wyglądało.
+
+```
+Magazyn/
+├── Magazyn.slnx     ← rozwiązanie: TO otwierasz w Visual Studio (Ctrl+F5 startuje API + stronę)
+├── README.md        ← mapa projektu + jak uruchomić
+├── .gitignore       ← bin/ obj/ .vs/ *.user *.db — baza NIE idzie do repo
+├── data/
+│   └── magazyn.db   ← BAZA (jeden plik na wszystko: konsola, API, strona)
+└── src/
+    ├── Magazyn/       ← KONSOLA (stara kasa — menu 1-8)
+    ├── MagazynApi/    ← API (kuchnia — port 5109)
+    ├── MagazynWeb/    ← STRONA (sala — port 5008)
+    └── MagazynShared/ ← WSPÓLNA PÓŁKA (modele: Batch, Item, DispatchRequest)
+```
+
+Ścieżka bazy w kodzie: `D:\Dane\Projekty\NaukaCSharp\Magazyn\data\magazyn.db`
+— konsola: `src\Magazyn\Program.cs` → `connectionString`; API: `src\MagazynApi\appsettings.json` → `ConnectionStrings:MagazynDb`.
+
+---
+
+## Historia: jak to wyglądało do 2026-11-16 (NIEaktualne)
+
 ```
 NaukaCSharp/
 ├── Magazyn/          ← KONSOLA (stara kasa — menu 1-8)
