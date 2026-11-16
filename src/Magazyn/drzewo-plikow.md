@@ -25,7 +25,7 @@ Magazyn/
     └── MagazynShared/ ← WSPÓLNA PÓŁKA (modele: Batch, Item, DispatchRequest)
 ```
 
-Ścieżka bazy w kodzie: `D:\Dane\Projekty\NaukaCSharp\Magazyn\data\magazyn.db`
+Ścieżka bazy w kodzie: `D:\Dane\Projekty\Nauka C#\Magazyn\data\magazyn.db`
 — konsola: `src\Magazyn\Program.cs` → `connectionString`; API: `src\MagazynApi\appsettings.json` → `ConnectionStrings:MagazynDb`.
 
 ---
