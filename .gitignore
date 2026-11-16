@@ -1,0 +1,19 @@
+## .NET — wyniki budowania
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+
+## Baza danych — dane lokalne, nie do repo
+*.db
+*.db-shm
+*.db-wal
+
+## System
+Thumbs.db
+Desktop.ini
