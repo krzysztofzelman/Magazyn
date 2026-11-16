@@ -1,25 +1,27 @@
 # Magazyn
 
-Projekt nauki C#: magazyn towaru (artykuły, partie, PZ/WZ) w trzech warstwach na **jednym pliku bazy** `data/magazyn.db`.
+Projekt nauki C#: API + strona Blazor na **wspólnej bazie** `data/magazyn.db`.
+Konsola jest teraz **osobnym projektem** — `D:\Dane\Projekty\Nauka C#\MagazynConsole\` — i ma własną bazę.
 
 ## Układ folderów
 
 ```
 Magazyn\
-├─ Magazyn.slnx          rozwiązanie z czterema projektami (start w Visual Studio)
-├─ data\magazyn.db       baza SQLite — wspólna dla wszystkich warstw
+├─ Magazyn.slnx          rozwiązanie z trzema projektami (start w Visual Studio)
+├─ data\magazyn.db       baza SQLite — wspólna dla API i strony
+├─ docs\                 notatki z nauki (dni 3–6, mapa projektu, drzewo plików)
 └─ src\
-   ├─ Magazyn\           konsola: opcje 1–7 (CRUD artykułów/partii, PZ, WZ FIFO)
    ├─ MagazynApi\        API, port 5109: api/Batch, api/przedmioty
    ├─ MagazynWeb\        strona Blazor, port 5008: / (artykuły), /partie
    └─ MagazynShared\     wspólne modele: Batch, Item, DispatchRequest
 ```
 
-Zależności: `MagazynApi` i `MagazynWeb` korzystają z `MagazynShared`. Konsola jest samodzielna (ma własny `Item.cs`).
+Zależności: `MagazynApi` i `MagazynWeb` korzystają z `MagazynShared`.
 
 ## Jak uruchomić
 
 W Visual Studio: otwórz `Magazyn.slnx` i wciśnij **Ctrl+F5** (startuje API + stronę).
+Strona: `http://localhost:5008`.
 
 Z terminala (dwa okna):
 
@@ -33,13 +35,17 @@ cd src\MagazynWeb
 dotnet run
 ```
 
-Konsola:
+## Konsola
+
+Osobny projekt: `D:\Dane\Projekty\Nauka C#\MagazynConsole\` (rozwiązanie `MagazynConsole.slnx`).
 
 ```
-cd src\Magazyn
+cd ..\MagazynConsole
 dotnet run
 ```
 
+Konsola czyta **własną** bazę `MagazynConsole\data\magazyn.db` — dane z konsoli nie pojawiają się na stronie `/partie` i odwrotnie.
+
 ## Notatki z nauki
 
-Pliki `nauka-dzien-*.md`, `mapa-projektu.md`, `drzewo-plikow.md` leżą w folderach projektów, których dotyczą (`src\Magazyn\`, `src\MagazynApi\`).
+Pliki `nauka-dzien-*.md`, `mapa-projektu.md`, `drzewo-plikow.md` leżą w `docs\`.

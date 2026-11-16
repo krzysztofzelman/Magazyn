@@ -1,5 +1,4 @@
 <Solution>
-  <Project Path="src/Magazyn/Magazyn.csproj" />
   <Project Path="src/MagazynApi/MagazynApi.csproj" />
   <Project Path="src/MagazynShared/MagazynShared.csproj" />
   <Project Path="src/MagazynWeb/MagazynWeb.csproj" />

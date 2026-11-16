@@ -1,5 +1,11 @@
 # DRZEWO PLIKÓW — co gdzie leży i co robi
 
+> ⚠️ **2026-11-16 — konsola odłączona:** `Magazyn.Console` ma teraz własny folder
+> `D:\Dane\Projekty\Nauka C#\MagazynConsole\`, własne rozwiązanie `MagazynConsole.slnx`
+> i **własną, osobną bazę** `data\magazyn.db`. Opis „jeden folder, jedno repo” poniżej
+> dotyczy już tylko API + strony + `MagazynShared`; zdania o wspólnej bazie z konsolą
+> są historią.
+
 > Ściąga do notatek `mapa-projektu.md`. Tu patrzysz, GDZIE co jest; tam — JAK to działa (piosenki).
 
 ## ⚠️ AKTUALNY UKŁAD (od 2026-11-16 — jeden folder, jedno repo)

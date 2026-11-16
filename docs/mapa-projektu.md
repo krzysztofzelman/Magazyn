@@ -1,5 +1,9 @@
 # MAPA PROJEKTU — Magazyn
 
+> ⚠️ **2026-11-16 — konsola odłączona:** `Magazyn.Console` to teraz osobny projekt
+> w `D:\Dane\Projekty\Nauka C#\MagazynConsole\` z własną bazą. Diagram poniżej pokazuje
+> stan sprzed podziału; API i strona nadal dzielą `Magazyn\data\magazyn.db`.
+
 > Jedna baza, trzy fronty. Kod czyta się PO WZORACH (piosenkach), nie po słowach.
 > Nie znasz pliku? Szukaj, KTÓRA piosenka w nim gra.
 
