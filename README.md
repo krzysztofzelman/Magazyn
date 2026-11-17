@@ -49,3 +49,7 @@ Konsola czyta **własną** bazę `MagazynConsole\data\magazyn.db` — dane z kon
 ## Notatki z nauki
 
 Pliki `nauka-dzien-*.md`, `mapa-projektu.md`, `drzewo-plikow.md` leżą w `docs\`.
+
+**`docs\wdrozenie-vps.md`** — mapa wdrożenia na serwer (stan 2026-11-17): cztery rzeczy,
+które blokują kontenery, co już czeka na VPS (domena, cert, porty), kolejność dwóch sesji
+i pułapki (WebSockety Blazora, wolumen na bazę, `*.db` w `.gitignore`).
